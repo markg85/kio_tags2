@@ -20,12 +20,14 @@ This project sadly does require a daemon to run. That will be either in KDED or 
 As noted before, the tags need to be very abstract to allow for multiple usecases. It's not only stash or dolphin tagging that needs to be possible, but also creating collections of tags and allowing other applications (say like gwenview) to use the very same tags as well.
 
 What i plan in doing is making "tag categories". When you request a tag (or do any action on it) you must provide a "category". The tags will then be loaded for that category. API wise, this could look somewhat like this:
- KIO::Tags2::TagDetails details;
- details.name = "Cats";
- details.description = "Some awesome descriptiong of cats";
- details. ...
+```cpp
+KIO::Tags2::TagDetails details;
+details.name = "Cats";
+details.description = "Some awesome descriptiong of cats";
+details. ...
 
- KIO::Tags2::setTag(<category>, <file UDSEntry>, details);
+KIO::Tags2::setTag(<category>, <file UDSEntry>, details);
+```
 
 The <category> would for instance be "Dolphin".
 This way it can also be used for completely different things. Like a category of "Stash".
@@ -41,18 +43,20 @@ The tag storage itself is proabbly going to be save (likely with QSaveFile) so y
 I would prefer (if possible and feasible) to have tags stored in JSON therefore i'm only going to describe how i would store it in that file.
 Take the following example.
 
- file.foo (xattr: "hasTags=true"), inode 8423984
- 
- tags.json
- {
-   tags: ["Code", "Cats", "Dogs", "etc.."]
-   files: [{inode: 8423984, tags: [0, 1]}, {inode: ....}, {etc...}]
- }
- 
- Tags could be more descriptive:
- {
-   tags: [{Name: "Code", Color: "#ff0000", Description: "Some fancy description"}, {...}, {...}]
- }
+```
+file.foo (xattr: "hasTags=true"), inode 8423984
+
+tags.json
+{
+  tags: ["Code", "Cats", "Dogs", "etc.."]
+  files: [{inode: 8423984, tags: [0, 1]}, {inode: ....}, {etc...}]
+}
+
+Tags could be more descriptive:
+{
+  tags: [{Name: "Code", Color: "#ff0000", Description: "Some fancy description"}, {...}, {...}]
+}
+```
 
 Here i would have tagged a file called "file.foo". From a file i would only store the inode number. It could potentially be extended a bit to include the device id as well to make it fairly unique, but along those lines is how i would store it. If an inode is in the tags datastore then it must have at least 1 tag. 0 is not possible, multiple obviously is.
 
